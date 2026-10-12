@@ -10,21 +10,10 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-val configuredMCoreJar = providers.gradleProperty("mcoreJar").orNull
-    ?: providers.environmentVariable("MCORE_JAR").orNull
-val candidateMCoreJars = listOf(
-    rootProject.file("mCore/build/libs/mCore.jar"),
-    rootProject.projectDir.parentFile.resolve("mCore/build/libs/mCore.jar"),
-    rootProject.file("libs/mCore.jar")
-)
-val mCoreJar = configuredMCoreJar?.let { file(it) }
-    ?: candidateMCoreJars.firstOrNull { it.isFile }
-    ?: candidateMCoreJars.first()
+val mCoreJar = rootProject.file("libs/mCore.jar")
 
 if (!mCoreJar.isFile) {
-    throw GradleException(
-        "mCore.jar was not found. Build mCore first or set MCORE_JAR (or -PmcoreJar) to its path: ${mCoreJar.absolutePath}"
-    )
+    throw GradleException("Required mCore library was not found: ${mCoreJar.absolutePath}")
 }
 
 repositories {
