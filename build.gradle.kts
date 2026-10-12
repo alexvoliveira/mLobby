@@ -22,6 +22,7 @@ repositories {
     maven { url = uri("https://hub.spigotmc.org/nexus/content/repositories/snapshots/") }
     maven { url = uri("https://repo.dmulloy2.net/repository/public/") }
     maven { url = uri("https://repo.phoenix616.dev/") }
+    maven { url = uri("https://repo.glaremasters.me/repository/public/") }
     maven { url = uri("https://repo.helpch.at/releases/") }
 }
 
