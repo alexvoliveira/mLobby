@@ -35,7 +35,7 @@ public class LCoreHook {
           }
         });
       }
-    }.runTaskTimerAsynchronously(Main.getInstance(), 0, Language.scoreboards$scroller$every_tick);
+    }.runTaskTimer(Main.getInstance(), 0L, Language.scoreboards$scroller$every_tick);
 
     new BukkitRunnable() {
       @Override
@@ -46,7 +46,7 @@ public class LCoreHook {
           }
         });
       }
-    }.runTaskTimerAsynchronously(Main.getInstance(), 0, 20);
+    }.runTaskTimer(Main.getInstance(), 0L, 20L);
 
     ProtocolLibrary.getProtocolManager().addPacketListener(new HologramAdapter());
   }
@@ -62,7 +62,6 @@ public class LCoreHook {
         for (int index = 0; index < lines.size(); index++) {
           String line = lines.get(index);
           line = PlaceholderAPI.setPlaceholders(player, line);
-
           this.add(index + 1, line);
         }
       }
@@ -73,20 +72,19 @@ public class LCoreHook {
 
   private static void setupHotbars() {
     HotbarActionType.addActionType("lobby", new LHotbarActionType());
-
     MConfig config = Main.getInstance().getConfig("hotbar");
     for (String id : new String[] {"lobby"}) {
       Hotbar hotbar = new Hotbar(id);
-
-      ConfigurationSection hb = config.getSection(id);
-      for (String button : hb.getKeys(false)) {
+      ConfigurationSection section = config.getSection(id);
+      for (String button : section.getKeys(false)) {
         try {
-          hotbar.getButtons().add(new HotbarButton(hb.getInt(button + ".slot"), new HotbarAction(hb.getString(button + ".execute")), hb.getString(button + ".icon")));
+          hotbar.getButtons().add(new HotbarButton(section.getInt(button + ".slot"),
+            new HotbarAction(section.getString(button + ".execute")), section.getString(button + ".icon")));
         } catch (Exception ex) {
-          Main.getInstance().getLogger().log(Level.WARNING, "Falha ao carregar o botao \"" + button + "\" da hotbar \"" + id + "\": ", ex);
+          Main.getInstance().getLogger().log(Level.WARNING,
+            "Falha ao carregar o botao \"" + button + "\" da hotbar \"" + id + "\": ", ex);
         }
       }
-
       Hotbar.addHotbar(hotbar);
     }
   }

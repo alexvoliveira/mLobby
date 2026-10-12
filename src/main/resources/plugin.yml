@@ -1,6 +1,6 @@
 author: Maxteer
-name: ${project.artifactId}
-version: ${project.version}
+name: mLobby
+version: "1.8"
 depend: [mCore]
 
-main: ${main}
+main: tk.slicecollections.maxteer.lobby.Main

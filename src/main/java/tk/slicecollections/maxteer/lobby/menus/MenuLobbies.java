@@ -3,89 +3,117 @@ package tk.slicecollections.maxteer.lobby.menus;
 import static tk.slicecollections.maxteer.lobby.lobby.Lobby.CONFIG;
 import static tk.slicecollections.maxteer.lobby.lobby.Lobby.listLobbies;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
-import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitTask;
 import tk.slicecollections.maxteer.Core;
-import tk.slicecollections.maxteer.libraries.menu.UpdatablePlayerMenu;
 import tk.slicecollections.maxteer.lobby.Main;
 import tk.slicecollections.maxteer.lobby.lobby.Lobby;
+import tk.slicecollections.maxteer.menus.PlayerMenuInventory;
 import tk.slicecollections.maxteer.player.Profile;
+import tk.slicecollections.maxteer.shaded.inventoryapi.editor.InventoryEditor;
+import tk.slicecollections.maxteer.shaded.inventoryapi.viewer.Viewer;
 import tk.slicecollections.maxteer.utils.BukkitUtils;
 import tk.slicecollections.maxteer.utils.StringUtils;
 
-public class MenuLobbies extends UpdatablePlayerMenu {
+/** Lobby selector backed by the inventory API bundled by mCore. */
+public class MenuLobbies extends PlayerMenuInventory implements Listener {
 
-  @EventHandler
-  public void onInventoryClick(InventoryClickEvent evt) {
-    if (evt.getInventory().equals(this.getInventory())) {
-      evt.setCancelled(true);
-
-      if (evt.getWhoClicked().equals(this.player)) {
-        Profile profile = Profile.getProfile(this.player.getName());
-        if (profile == null) {
-          this.player.closeInventory();
-          return;
-        }
-
-        if (evt.getClickedInventory() != null && evt.getClickedInventory().equals(this.getInventory())) {
-          ItemStack item = evt.getCurrentItem();
-
-          if (item != null && item.getType() != Material.AIR) {
-            Lobby lobby = listLobbies().stream().filter(s -> s.getSlot() == evt.getSlot()).findFirst().orElse(null);
-            if (lobby != null && !Main.currentServerName.contentEquals(lobby.getServerName()) && lobby.getPlayers() < lobby.getMaxPlayers()) {
-              Core.sendServer(profile, lobby.getServerName());
-              this.player.closeInventory();
-            }
-          }
-        }
-      }
-    }
-  }
+  private Inventory inventory;
+  private BukkitTask updateTask;
 
   public MenuLobbies(Profile profile) {
-    super(profile.getPlayer(), CONFIG.getString("title"), CONFIG.getInt("rows"));
-
-    this.update();
-    this.register(Core.getInstance(), 20);
-    this.open();
+    super(profile.getPlayer(), "mlobby.lobbies", CONFIG.getString("title"), CONFIG.getInt("rows"));
+    Bukkit.getPluginManager().registerEvents(this, Main.getInstance());
+    openForPlayer();
+    updateTask = Bukkit.getScheduler().runTaskTimer(Main.getInstance(), () -> {
+      if (inventory != null && player.getOpenInventory().getTopInventory().equals(inventory)) {
+        updateInventory(player);
+      } else {
+        cancel();
+      }
+    }, 20L, 20L);
   }
 
   @Override
-  public void update() {
+  protected void configureInventory(Viewer viewer, InventoryEditor editor) {
+    inventory = editor.getInventory();
+  }
+
+  @Override
+  protected void update(Viewer viewer, InventoryEditor editor) {
+    for (int slot = 0; slot < editor.getInventory().getSize(); slot++) {
+      editor.setEmptyItem(slot);
+    }
+
     for (Lobby lobby : listLobbies()) {
       ItemStack icon = BukkitUtils.deserializeItemStack(
-        lobby.getIcon().replace("{players}", StringUtils.formatNumber(lobby.getPlayers())).replace("{maxplayers}", StringUtils.formatNumber(lobby.getMaxPlayers()))
-          .replace("{description}",
-            StringUtils.formatColors(CONFIG.getString("messages.description." + (Main.currentServerName.equals(lobby.getServerName()) ? "current" : "connect")))));
-      if (Main.currentServerName.equals(lobby.getServerName())) {
+        lobby.getIcon()
+          .replace("{players}", StringUtils.formatNumber(lobby.getPlayers()))
+          .replace("{maxplayers}", StringUtils.formatNumber(lobby.getMaxPlayers()))
+          .replace("{description}", StringUtils.formatColors(CONFIG.getString(
+            "messages.description." + (isCurrentServer(lobby) ? "current" : "connect")))));
+
+      if (isCurrentServer(lobby) && icon != null && icon.getType() != Material.AIR) {
         BukkitUtils.putGlowEnchantment(icon);
       }
-
-      this.setItem(lobby.getSlot(), icon);
+      setMenuItem(editor, lobby.getSlot(), icon);
     }
   }
 
-  public void cancel() {
-    super.cancel();
+  @Override
+  protected void onClick(int slot) {
+    Lobby selected = null;
+    for (Lobby lobby : listLobbies()) {
+      if (lobby.getSlot() == slot) {
+        selected = lobby;
+        break;
+      }
+    }
+    if (selected == null || isCurrentServer(selected) || selected.getPlayers() >= selected.getMaxPlayers()) {
+      return;
+    }
+
+    Profile profile = Profile.getProfile(player.getName());
+    if (profile == null) {
+      player.closeInventory();
+      return;
+    }
+
+    Core.sendServer(profile, selected.getServerName());
+    player.closeInventory();
+  }
+
+  private boolean isCurrentServer(Lobby lobby) {
+    return Main.currentServerName != null && Main.currentServerName.equalsIgnoreCase(lobby.getServerName());
+  }
+
+  private void cancel() {
+    if (updateTask != null) {
+      updateTask.cancel();
+      updateTask = null;
+    }
     HandlerList.unregisterAll(this);
   }
 
   @EventHandler
-  public void onPlayerQuit(PlayerQuitEvent evt) {
-    if (evt.getPlayer().equals(this.player)) {
-      this.cancel();
+  public void onPlayerQuit(PlayerQuitEvent event) {
+    if (event.getPlayer().equals(player)) {
+      cancel();
     }
   }
 
   @EventHandler
-  public void onInventoryClose(InventoryCloseEvent evt) {
-    if (evt.getPlayer().equals(this.player) && evt.getInventory().equals(this.getInventory())) {
-      this.cancel();
+  public void onInventoryClose(InventoryCloseEvent event) {
+    if (inventory != null && event.getPlayer().equals(player) && event.getInventory().equals(inventory)) {
+      cancel();
     }
   }
 }
