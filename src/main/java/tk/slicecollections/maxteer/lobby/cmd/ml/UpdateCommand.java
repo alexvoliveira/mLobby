@@ -12,6 +12,6 @@ public class UpdateCommand extends SubCommand {
 
   @Override
   public void perform(Player player, String[] args) {
-    player.sendMessage("§aO plugin já se encontra em sua última versão.");
+    player.sendMessage("§eO mLobby não consulta atualizações online. Use um JAR verificado e reinicie o servidor para atualizar.");
   }
 }
