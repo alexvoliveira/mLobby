@@ -2,7 +2,6 @@ package tk.slicecollections.maxteer.lobby.cmd.ml;
 
 import org.bukkit.entity.Player;
 import tk.slicecollections.maxteer.lobby.cmd.SubCommand;
-import tk.slicecollections.maxteer.lobby.lobby.LobbyEntryTask;
 
 public class UpdateCommand extends SubCommand {
 
