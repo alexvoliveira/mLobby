@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import tk.slicecollections.maxteer.Core;
 import tk.slicecollections.maxteer.lobby.cmd.Commands;
 import tk.slicecollections.maxteer.lobby.hook.LCoreHook;
+import tk.slicecollections.maxteer.nms.network.NMSPacketInterceptor;
 import tk.slicecollections.maxteer.lobby.listeners.Listeners;
 import tk.slicecollections.maxteer.lobby.lobby.DeliveryNPC;
 import tk.slicecollections.maxteer.lobby.lobby.Lobby;
@@ -64,6 +65,7 @@ public class Main extends MPlugin {
 
   @Override
   public void disable() {
+    NMSPacketInterceptor.unregisterListeners(this);
     if (validInit) {
       PlayNPC.listNPCs().forEach(PlayNPC::destroy);
       TagUtils.reset();

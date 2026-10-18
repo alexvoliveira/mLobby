@@ -20,7 +20,6 @@ repositories {
     mavenLocal()
     mavenCentral()
     maven { url = uri("https://hub.spigotmc.org/nexus/content/repositories/snapshots/") }
-    maven { url = uri("https://repo.dmulloy2.net/repository/public/") }
     maven { url = uri("https://repo.phoenix616.dev/") }
     maven { url = uri("https://repo.glaremasters.me/repository/public/") }
     maven { url = uri("https://repo.helpch.at/releases/") }
@@ -29,7 +28,6 @@ repositories {
 dependencies {
     compileOnly(files(mCoreJar))
     compileOnly("org.spigotmc:spigot:1.8.8-R0.1-SNAPSHOT")
-    compileOnly("com.comphenix.protocol:ProtocolLib:4.5.0")
     compileOnly("me.clip:placeholderapi:2.10.5")
 }
 

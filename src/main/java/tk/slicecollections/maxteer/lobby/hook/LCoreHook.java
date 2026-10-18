@@ -1,6 +1,5 @@
 package tk.slicecollections.maxteer.lobby.hook;
 
-import com.comphenix.protocol.ProtocolLibrary;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -12,7 +11,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import tk.slicecollections.maxteer.lobby.Language;
 import tk.slicecollections.maxteer.lobby.Main;
 import tk.slicecollections.maxteer.lobby.hook.hotbar.LHotbarActionType;
-import tk.slicecollections.maxteer.lobby.hook.protocollib.HologramAdapter;
+import tk.slicecollections.maxteer.lobby.hook.nms.HologramPacketHandler;
+import tk.slicecollections.maxteer.nms.network.NMSPacketInterceptor;
 import tk.slicecollections.maxteer.player.Profile;
 import tk.slicecollections.maxteer.player.hotbar.Hotbar;
 import tk.slicecollections.maxteer.player.hotbar.HotbarAction;
@@ -48,7 +48,7 @@ public class LCoreHook {
       }
     }.runTaskTimer(Main.getInstance(), 0L, 20L);
 
-    ProtocolLibrary.getProtocolManager().addPacketListener(new HologramAdapter());
+    NMSPacketInterceptor.registerListener(Main.getInstance(), new HologramPacketHandler());
   }
 
   public static void reloadScoreboard(Profile profile) {
