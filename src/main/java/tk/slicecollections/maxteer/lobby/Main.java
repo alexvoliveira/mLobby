@@ -34,6 +34,13 @@ public class Main extends MPlugin {
 
   @Override
   public void enable() {
+    Core core = Core.getInstance();
+    if (core == null || !core.isEnabled() || !Core.validInit) {
+      getLogger().severe("mCore não foi inicializado corretamente; o mLobby será desativado para evitar erros em cascata.");
+      Bukkit.getPluginManager().disablePlugin(this);
+      return;
+    }
+
     saveDefaultConfig();
     currentServerName = getConfig().getString("lobby");
     if (getConfig().getString("spawn") != null) {
