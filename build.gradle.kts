@@ -37,4 +37,11 @@ tasks.withType<JavaCompile>().configureEach {
 
 tasks.jar {
     archiveFileName.set("mLobby.jar")
+    // These source files only provide compile-time signatures for the bundled, older mCore JAR.
+    // At runtime the real implementations are loaded from the required mCore plugin.
+    exclude(
+        "tk/slicecollections/maxteer/nms/network/NMSPacketInterceptor.class",
+        "tk/slicecollections/maxteer/nms/network/NMSPacketInterceptor\$PacketHandler.class",
+        "tk/slicecollections/maxteer/nms/network/NMSPacketAccess.class"
+    )
 }
