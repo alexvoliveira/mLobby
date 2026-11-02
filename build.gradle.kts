@@ -20,6 +20,7 @@ repositories {
     mavenLocal()
     mavenCentral()
     maven { url = uri("https://hub.spigotmc.org/nexus/content/repositories/snapshots/") }
+    maven { url = uri("https://repo.dmulloy2.net/nexus/repository/public/") }
     maven { url = uri("https://repo.phoenix616.dev/") }
     maven { url = uri("https://repo.glaremasters.me/repository/public/") }
     maven { url = uri("https://repo.helpch.at/releases/") }
@@ -28,6 +29,7 @@ repositories {
 dependencies {
     compileOnly(files(mCoreJar))
     compileOnly("org.spigotmc:spigot:1.8.8-R0.1-SNAPSHOT")
+    compileOnly("com.comphenix.protocol:ProtocolLib:4.5.0")
     compileOnly("me.clip:placeholderapi:2.10.5")
 }
 
@@ -37,11 +39,11 @@ tasks.withType<JavaCompile>().configureEach {
 
 tasks.jar {
     archiveFileName.set("mLobby.jar")
-    // These source files only provide compile-time signatures for the bundled, older mCore JAR.
-    // At runtime the real implementations are loaded from the required mCore plugin.
+    // These compile-time contracts and the obsolete NMS packet handler are not runtime dependencies.
     exclude(
         "tk/slicecollections/maxteer/nms/network/NMSPacketInterceptor.class",
         "tk/slicecollections/maxteer/nms/network/NMSPacketInterceptor\$PacketHandler.class",
-        "tk/slicecollections/maxteer/nms/network/NMSPacketAccess.class"
+        "tk/slicecollections/maxteer/nms/network/NMSPacketAccess.class",
+        "tk/slicecollections/maxteer/lobby/hook/nms/HologramPacketHandler.class"
     )
 }
