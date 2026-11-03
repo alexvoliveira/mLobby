@@ -39,6 +39,9 @@ public class Language {
           "", "§eredeslice.com");
 
   public static String chat$delay = "§cAguarde mais {time}s para falar novamente.";
+  public static int chat$delay$seconds = 3;
+  public static String chat$delay$permission = "mlobby.chat.delay";
+  public static String chat$color$permission = "mlobby.chat.color";
   public static String chat$color$default = "§7";
   public static String chat$color$custom = "§f";
   public static String chat$format$lobby = "{player}{color}: {message}";
