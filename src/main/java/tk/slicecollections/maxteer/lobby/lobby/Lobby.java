@@ -59,20 +59,40 @@ public class Lobby {
   public static final List<String> WARNINGS = new ArrayList<>();
 
   public static void setupLobbies() {
-    new LobbyEntryTask().runTaskTimerAsynchronously(Main.getInstance(), 0, 20 * 30);
+    long refreshInterval = Math.max(20L, CONFIG.getLong("refresh-interval-ticks", 20L * 30L));
+    new LobbyEntryTask().runTaskTimerAsynchronously(Main.getInstance(), 0L, refreshInterval);
 
     for (String key : CONFIG.getSection("items").getKeys(false)) {
       String servername = CONFIG.getString("items." + key + ".servername");
-      if (servername.split(" ; ").length < 2) {
+      if (servername == null) {
+        WARNINGS.add(" - (" + key + ") servername ausente");
+        continue;
+      }
+
+      String[] serverParts = servername.split(" ; ", 2);
+      if (serverParts.length != 2) {
         WARNINGS.add(" - (" + key + ") " + servername);
         continue;
       }
 
-      LOBBIES.add(
-          new Lobby(CONFIG.getInt("items." + key + ".slot"),
-              CONFIG.getString("items." + key + ".icon"),
-              CONFIG.getInt("items." + key + ".max-players"), servername.split(" ; ")[0],
-              servername.split(" ; ")[1]));
+      String[] address = serverParts[0].split(":", 2);
+      if (address.length != 2) {
+        WARNINGS.add(" - (" + key + ") endereço inválido: " + serverParts[0]);
+        continue;
+      }
+
+      try {
+        int port = Integer.parseInt(address[1]);
+        if (port < 1 || port > 65535 || address[0].trim().isEmpty()) {
+          throw new IllegalArgumentException("Endereço ou porta inválida");
+        }
+        LOBBIES.add(new Lobby(CONFIG.getInt("items." + key + ".slot"),
+          CONFIG.getString("items." + key + ".icon"),
+          CONFIG.getInt("items." + key + ".max-players"), address[0].trim() + ":" + port,
+          serverParts[1].trim()));
+      } catch (IllegalArgumentException ex) {
+        WARNINGS.add(" - (" + key + ") endereço inválido: " + serverParts[0]);
+      }
     }
 
     for (Lobby lobby : LOBBIES) {
