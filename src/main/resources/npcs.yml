@@ -1,0 +1,7 @@
+# Intervalo de atualização dos hologramas de NPC, em ticks.
+# 20 ticks equivalem a 1 segundo.
+hologram-update-interval-ticks: 20
+
+# Localizações persistidas pelos comandos do mLobby.
+play: []
+delivery: []
