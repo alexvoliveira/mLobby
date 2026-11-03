@@ -1,0 +1,27 @@
+# Configuração do scoreboard do lobby (Spigot 1.8.8).
+# Intervalos são medidos em ticks; 20 ticks equivalem a 1 segundo.
+scroll-interval-ticks: 1
+update-interval-ticks: 20
+
+titles:
+  - '§a§lREDE SLICE'
+  - '§f§l§6§lR§a§lEDE SLICE'
+  - '§f§lR§6§lE§a§lDE SLICE'
+  - '§f§lRE§6§lD§a§lE SLICE'
+  - '§f§lRED§6§lE §a§lSLICE'
+  - '§f§lREDE §6§lS§a§lLICE'
+  - '§f§lREDE S§6§lL§a§lICE'
+  - '§f§lREDE SL§6§lI§a§lCE'
+  - '§f§lREDE SLI§6§lC§a§lE'
+  - '§f§lREDE SLIC§6§lE'
+  - '§a§lREDE SLICE'
+
+lobby:
+  lines:
+    - ''
+    - 'Grupo: §a%mCore_role%'
+    - 'Cash: §b%mCore_cash%'
+    - ''
+    - 'Online: §a%mCore_online%'
+    - ''
+    - '§eredeslice.com'
