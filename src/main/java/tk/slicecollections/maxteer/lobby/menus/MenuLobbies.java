@@ -39,7 +39,7 @@ public class MenuLobbies extends PlayerMenuInventory implements Listener {
       } else {
         cancel();
       }
-    }, 20L, 20L);
+    }, 20L, Math.max(1L, CONFIG.getLong("menu.update-interval-ticks", 20L)));
   }
 
   @Override
