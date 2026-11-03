@@ -108,7 +108,7 @@ public class DeliveryNPC {
     }
 
     Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getInstance(), () -> NPCS.forEach(DeliveryNPC::update),
-      20L, Math.max(1L, CONFIG.getLong("hologram-update-interval-ticks", 20L)));
+      20L, Math.max(1, CONFIG.getInt("hologram-update-interval-ticks", 20)));
   }
 
   public static void add(String id, Location location) {
