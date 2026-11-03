@@ -48,7 +48,7 @@ public class LCoreHook {
         });
       }
     }.runTaskTimer(Main.getInstance(), 0L,
-      Math.max(1L, scoreboardConfig.getLong("scroll-interval-ticks", 1L)));
+      Math.max(1, scoreboardConfig.getInt("scroll-interval-ticks", 1)));
 
     new BukkitRunnable() {
       @Override
@@ -60,7 +60,7 @@ public class LCoreHook {
         });
       }
     }.runTaskTimer(Main.getInstance(), 0L,
-      Math.max(1L, scoreboardConfig.getLong("update-interval-ticks", 20L)));
+      Math.max(1, scoreboardConfig.getInt("update-interval-ticks", 20)));
 
     ProtocolLibrary.getProtocolManager().addPacketListener(new HologramAdapter());
   }
