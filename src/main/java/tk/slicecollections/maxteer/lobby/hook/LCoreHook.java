@@ -33,8 +33,11 @@ import tk.slicecollections.maxteer.utils.StringUtils;
 
 public class LCoreHook {
 
+  private static MConfig scoreboardConfig;
+
   public static void setupHook() {
     setupHotbars();
+    scoreboardConfig = Main.getInstance().getConfig("scoreboard");
     new BukkitRunnable() {
       @Override
       public void run() {
@@ -44,7 +47,8 @@ public class LCoreHook {
           }
         });
       }
-    }.runTaskTimer(Main.getInstance(), 0L, Language.scoreboards$scroller$every_tick);
+    }.runTaskTimer(Main.getInstance(), 0L,
+      Math.max(1L, scoreboardConfig.getLong("scroll-interval-ticks", 1L)));
 
     new BukkitRunnable() {
       @Override
@@ -55,26 +59,26 @@ public class LCoreHook {
           }
         });
       }
-    }.runTaskTimer(Main.getInstance(), 0L, 20L);
+    }.runTaskTimer(Main.getInstance(), 0L,
+      Math.max(1L, scoreboardConfig.getLong("update-interval-ticks", 20L)));
 
     ProtocolLibrary.getProtocolManager().addPacketListener(new HologramAdapter());
   }
 
   public static void reloadScoreboard(Profile profile) {
     Player player = profile.getPlayer();
-    List<String> lines = new ArrayList<>(Language.scoreboards$lobby);
+    List<String> lines = new ArrayList<>(scoreboardConfig.getStringList("lobby.lines"));
     Collections.reverse(lines);
     profile.setScoreboard(new MScoreboard() {
       @Override
       public void update() {
         this.updateHealth();
         for (int index = 0; index < lines.size(); index++) {
-          String line = lines.get(index);
-          line = PlaceholderAPI.setPlaceholders(player, line);
+          String line = PlaceholderAPI.setPlaceholders(player, lines.get(index));
           this.add(index + 1, line);
         }
       }
-    }.scroller(new ScoreboardScroller(Language.scoreboards$scroller$titles)).to(profile.getPlayer()).build());
+    }.scroller(new ScoreboardScroller(scoreboardConfig.getStringList("titles"))).to(player).build());
     profile.update();
     profile.getScoreboard().scroll();
   }
@@ -85,6 +89,10 @@ public class LCoreHook {
     for (String id : new String[] {"lobby"}) {
       Hotbar hotbar = new Hotbar(id);
       ConfigurationSection section = config.getSection(id);
+      if (section == null) {
+        Main.getInstance().getLogger().warning("A hotbar '" + id + "' não possui configuração.");
+        continue;
+      }
       for (String button : section.getKeys(false)) {
         try {
           hotbar.getButtons().add(new HotbarButton(section.getInt(button + ".slot"),
