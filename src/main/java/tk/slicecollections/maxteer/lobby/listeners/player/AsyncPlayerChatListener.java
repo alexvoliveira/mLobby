@@ -1,8 +1,8 @@
 package tk.slicecollections.maxteer.lobby.listeners.player;
 
 import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Bukkit;
@@ -20,7 +20,7 @@ import tk.slicecollections.maxteer.utils.StringUtils;
 
 public class AsyncPlayerChatListener implements Listener {
 
-  private static final Map<String, Long> flood = new HashMap<>();
+  private static final ConcurrentMap<String, Long> flood = new ConcurrentHashMap<>();
 
   private static final DecimalFormat df = new DecimalFormat("###.#");
 
@@ -36,7 +36,7 @@ public class AsyncPlayerChatListener implements Listener {
     }
 
     Player player = evt.getPlayer();
-    if (!player.hasPermission("mlobby.chat.delay")) {
+    if (!player.hasPermission(Language.chat$delay$permission)) {
       long start = flood.containsKey(player.getName()) ? flood.get(player.getName()) : 0;
       if (start > System.currentTimeMillis()) {
         double time = (start - System.currentTimeMillis()) / 1000.0;
@@ -52,11 +52,11 @@ public class AsyncPlayerChatListener implements Listener {
         }
       }
 
-      flood.put(player.getName(), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(3));
+      flood.put(player.getName(), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(Math.max(0, Language.chat$delay$seconds)));
     }
 
     Role role = Role.getPlayerRole(player);
-    if (player.hasPermission("mlobby.chat.color")) {
+    if (player.hasPermission(Language.chat$color$permission)) {
       evt.setMessage(StringUtils.formatColors(evt.getMessage()));
     }
 
