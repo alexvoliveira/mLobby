@@ -1,3 +1,6 @@
+# Intervalo de consulta de status dos servidores, em ticks (20 = 1 segundo).
+refresh-interval-ticks: 600
+
 # Título do menu
 title: 'Lobbies'
 # Colunas do menu
@@ -5,12 +8,9 @@ rows: 3
 items:
   lobby1:
     slot: 10
-    icon: 'INK_SACK:10 : 1 : nome>&aLobby 1 : desc>&fJogadores: &7{players}/{maxplayers}\n \n{description}'
-    # Quantidade maxima de jogadores
+    icon: 'INK_SACK:10 : 1 : nome>&aLobby 1 : desc>&fJogadores: &7{players}/{maxplayers}\\n \\n{description}'
     max-players: 50
-    # Servidor para requisitar os dados
-    # Utilize o formato : IP:PORTA ; BungeeServerName
-    # BungeeServerName = nome do servidor na config.yml do bungeecord.
+    # Formato: IP:PORTA ; NomeDoServidorNoBungeeCord
     servername: '127.0.0.1:25565 ; lobby'
 messages:
   description:
