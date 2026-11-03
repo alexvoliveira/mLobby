@@ -59,7 +59,7 @@ public class Lobby {
   public static final List<String> WARNINGS = new ArrayList<>();
 
   public static void setupLobbies() {
-    long refreshInterval = Math.max(20L, CONFIG.getLong("refresh-interval-ticks", 20L * 30L));
+    long refreshInterval = Math.max(20, CONFIG.getInt("refresh-interval-ticks", 20 * 30));
     new LobbyEntryTask().runTaskTimerAsynchronously(Main.getInstance(), 0L, refreshInterval);
 
     for (String key : CONFIG.getSection("items").getKeys(false)) {
