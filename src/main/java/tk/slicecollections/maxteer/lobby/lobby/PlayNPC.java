@@ -123,7 +123,8 @@ public class PlayNPC {
       }
     }
 
-    Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getInstance(), () -> NPCS.forEach(PlayNPC::update), 20, 20);
+    Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getInstance(), () -> NPCS.forEach(PlayNPC::update),
+      20L, Math.max(1L, CONFIG.getLong("hologram-update-interval-ticks", 20L)));
   }
 
   public static void add(String id, Location location, ServerEntry mode) {
