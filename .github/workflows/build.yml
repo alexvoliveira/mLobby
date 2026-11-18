@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: mlobby-build-${{ github.ref }}
@@ -61,3 +61,20 @@ jobs:
           path: build/libs/mLobby.jar
           if-no-files-found: error
           retention-days: 14
+
+      - name: Publish built JAR to repository
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          mkdir -p dist
+          cp build/libs/mLobby.jar dist/mLobby.jar
+          sha256sum dist/mLobby.jar > dist/mLobby.jar.sha256
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- dist/mLobby.jar dist/mLobby.jar.sha256
+          if git diff --cached --quiet; then
+            echo "No JAR changes to publish."
+            exit 0
+          fi
+          git commit -m "build: publish mLobby.jar [skip ci]"
+          git push origin "HEAD:${GITHUB_REF_NAME}"

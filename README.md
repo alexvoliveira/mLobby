@@ -67,6 +67,8 @@ O arquivo gerado é:
 build/libs/mLobby.jar
 ```
 
+Em pushes para `main`, o GitHub Actions também copia o JAR validado para [`dist/mLobby.jar`](dist/mLobby.jar) e publica seu checksum em [`dist/mLobby.jar.sha256`](dist/mLobby.jar.sha256).
+
 Veja [docs/BUILD.md](docs/BUILD.md) para preparar o mCore local, entender as dependências e diagnosticar falhas de build.
 
 ## Configuração
